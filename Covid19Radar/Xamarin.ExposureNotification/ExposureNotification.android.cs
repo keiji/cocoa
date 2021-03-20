@@ -145,7 +145,7 @@ namespace Xamarin.ExposureNotifications
 			var workRequest = workRequestBuilder.Build();
 
 			workManager.EnqueueUniquePeriodicWork("exposurenotification",
-				ExistingPeriodicWorkPolicy.Replace,
+				ExistingPeriodicWorkPolicy.Keep,
 				workRequest);
 
 			return Task.CompletedTask;
