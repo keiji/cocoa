@@ -109,7 +109,7 @@ namespace Xamarin.ExposureNotifications
 				{
 #if __IOS__
 					// On iOS we need to check this ourselves and invoke the handler
-					var (summary, info) = await PlatformDetectExposuresAsync(downloadedFiles, region, cancellationToken);
+					var (summary, info) = await PlatformDetectExposuresAsync(downloadedFiles, token, cancellationToken);
 
 					// Check that the summary has any matches before notifying the callback
 					if (summary?.MatchedKeyCount > 0)
