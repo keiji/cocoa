@@ -20,6 +20,13 @@ namespace Covid19Radar.Services
         Configuration GetConfiguration();
         void RemoveConfiguration();
 
+        string GetAttemptProcessTekRegion();
+        void SetAttemptProcessTekRegion(string region);
+        void RemoveAttemptProcessTekRegion();
+
+        long GetAttemptProcessTekTimestamp(string region);
+        void SetAttemptProcessTekTimestamp(string region, long timestamp);
+
         long GetLastProcessTekTimestamp(string region);
         void SetLastProcessTekTimestamp(string region, long created);
         void RemoveLastProcessTekTimestamp();
@@ -152,6 +159,70 @@ namespace Covid19Radar.Services
         {
             loggerService.StartMethod();
             await ExposureNotification.UpdateKeysFromServer();
+            loggerService.EndMethod();
+        }
+
+        public string GetAttemptProcessTekRegion()
+        {
+            loggerService.StartMethod();
+            var result = preferencesService.GetValue<string>(PreferenceKey.AttemptProcessTekRegion, null);
+            loggerService.EndMethod();
+            return result;
+        }
+
+        public void SetAttemptProcessTekRegion(string region)
+        {
+            loggerService.StartMethod();
+            preferencesService.SetValue(PreferenceKey.AttemptProcessTekRegion, region);
+            loggerService.EndMethod();
+        }
+
+        public void RemoveAttemptProcessTekRegion()
+        {
+            loggerService.StartMethod();
+            preferencesService.RemoveValue(PreferenceKey.AttemptProcessTekRegion);
+            loggerService.EndMethod();
+        }
+
+        public long GetAttemptProcessTekTimestamp(string region)
+        {
+            loggerService.StartMethod();
+            var result = 0L;
+            var jsonString = preferencesService.GetValue<string>(PreferenceKey.AttemptProcessTekTimestamp, null);
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+                if (dict.ContainsKey(region))
+                {
+                    result = dict[region];
+                }
+            }
+            loggerService.EndMethod();
+            return result;
+        }
+
+        public void SetAttemptProcessTekTimestamp(string region, long created)
+        {
+            loggerService.StartMethod();
+            var jsonString = preferencesService.GetValue<string>(PreferenceKey.AttemptProcessTekTimestamp, null);
+            Dictionary<string, long> newDict;
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                newDict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+            }
+            else
+            {
+                newDict = new Dictionary<string, long>();
+            }
+            newDict[region] = created;
+            preferencesService.SetValue(PreferenceKey.AttemptProcessTekTimestamp, JsonConvert.SerializeObject(newDict));
+            loggerService.EndMethod();
+        }
+
+        public void RemoveAttemptProcessTekTimestamp()
+        {
+            loggerService.StartMethod();
+            preferencesService.RemoveValue(PreferenceKey.AttemptProcessTekTimestamp);
             loggerService.EndMethod();
         }
 

@@ -10,25 +10,18 @@ using AndroidX.Core.App;
 
 namespace Xamarin.ExposureNotifications
 {
-    [BroadcastReceiver(
-        Permission = "com.google.android.gms.nearby.exposurenotification.EXPOSURE_CALLBACK",
-        Exported = true)]
-    [IntentFilter(new[] { ExposureNotificationClient.ActionExposureStateUpdated, "com.google.android.gms.exposurenotification.ACTION_EXPOSURE_NOT_FOUND" })]
+    [BroadcastReceiver(Permission = permissionExposureCallback, Exported = true)]
+    [IntentFilter(new[] { actionExposureStateUpdated, actionExposureNotFound })]
     [Preserve]
     class ExposureNotificationCallbackBroadcastReceiver : BroadcastReceiver
     {
+        const string actionExposureStateUpdated = ExposureNotificationClient.ActionExposureStateUpdated;
+        const string actionExposureNotFound = "com.google.android.gms.exposurenotification.ACTION_EXPOSURE_NOT_FOUND";
+        const string permissionExposureCallback = "com.google.android.gms.nearby.exposurenotification.EXPOSURE_CALLBACK";
+
         public override void OnReceive(Context context, Intent intent)
         {
-            // https://developers.google.com/android/exposure-notifications/exposure-notifications-api#methods
-            var action = intent.Action;
-            if(action == ExposureNotificationClient.ActionExposureStateUpdated)
-            {
-                ExposureNotificationCallbackService.EnqueueWork(context, intent);
-            }
-            else if(action == "com.google.android.gms.exposurenotification.ACTION_EXPOSURE_NOT_FOUND")
-            {
-                Console.WriteLine($"C19R {nameof(ExposureNotificationCallbackBroadcastReceiver)} ACTION_EXPOSURE_NOT_FOUND.");
-            }
+            ExposureNotificationCallbackService.EnqueueWork(context, intent);
         }
     }
 
@@ -45,22 +38,34 @@ namespace Xamarin.ExposureNotifications
         protected override async void OnHandleWork(Intent workIntent)
         {
             Console.WriteLine($"C19R {nameof(ExposureNotificationCallbackService)}");
-            var token = workIntent.GetStringExtra(ExposureNotificationClient.ExtraToken);
 
-            var summary = await ExposureNotification.PlatformGetExposureSummaryAsync(token);
-
-            Task<IEnumerable<ExposureInfo>> GetInfo()
+            // https://developers.google.com/android/exposure-notifications/exposure-notifications-api#methods
+            var action = workIntent.Action;
+            if (action == ExposureNotificationClient.ActionExposureStateUpdated)
             {
-                return ExposureNotification.PlatformGetExposureInformationAsync(token);
+                var token = workIntent.GetStringExtra(ExposureNotificationClient.ExtraToken);
+
+                var summary = await ExposureNotification.PlatformGetExposureSummaryAsync(token);
+
+                Task<IEnumerable<ExposureInfo>> GetInfo()
+                {
+                    return ExposureNotification.PlatformGetExposureInformationAsync(token);
+                }
+
+                // Invoke the custom implementation handler code with the summary info
+                Console.WriteLine($"C19R {nameof(ExposureNotificationCallbackService)}{summary?.MatchedKeyCount} Matched Key Count");
+
+                if (summary?.MatchedKeyCount > 0)
+                {
+                    await ExposureNotification.Handler.ExposureDetectedAsync(summary, GetInfo);
+                }
+            }
+            else if (action == "com.google.android.gms.exposurenotification.ACTION_EXPOSURE_NOT_FOUND")
+            {
+                Console.WriteLine($"C19R {nameof(ExposureNotificationCallbackBroadcastReceiver)} ACTION_EXPOSURE_NOT_FOUND.");
             }
 
-            // Invoke the custom implementation handler code with the summary info
-            Console.WriteLine($"C19R {nameof(ExposureNotificationCallbackService)}{summary?.MatchedKeyCount} Matched Key Count");
-
-            if (summary?.MatchedKeyCount > 0)
-            {
-                await ExposureNotification.Handler.ExposureDetectedAsync(summary, GetInfo);
-            }
+            await ExposureNotification.Handler.ExposureDetectionFinishedAsync();
         }
     }
 }

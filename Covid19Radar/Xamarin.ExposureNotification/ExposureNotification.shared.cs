@@ -100,6 +100,8 @@ namespace Xamarin.ExposureNotifications
 
 					if (hasMatches)
 						await Handler.ExposureDetectedAsync(r.summary, r.getInfo);
+
+					await Handler.ExposureDetectionFinishedAsync();
 				}
 				else
 				{
@@ -110,6 +112,8 @@ namespace Xamarin.ExposureNotifications
 					// Check that the summary has any matches before notifying the callback
 					if (summary?.MatchedKeyCount > 0)
 						await Handler.ExposureDetectedAsync(summary, info);
+
+					await Handler.ExposureDetectionFinishedAsync();
 #elif __ANDROID__
 					// on Android this will happen in the broadcast receiver
 					await PlatformDetectExposuresAsync(downloadedFiles, cancellationToken);
