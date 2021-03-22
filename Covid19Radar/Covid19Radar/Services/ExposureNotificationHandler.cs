@@ -125,19 +125,12 @@ namespace Covid19Radar.Services
         }
 
 #pragma warning disable 1998
-        public async Task ExposureDetectionFinishedAsync()
+        public async Task ExposureDetectionFinishedAsync(string region)
         {
             var loggerService = LoggerService;
             loggerService.StartMethod();
 
             var exposureNotificationService = ExposureNotificationService;
-            var region = exposureNotificationService.GetAttemptProcessTekRegion();
-            if (region == null)
-            {
-                loggerService.Error($"AttemptProcessTekRegion is null");
-                loggerService.EndMethod();
-                return;
-            }
 
             var timestamp = exposureNotificationService.GetAttemptProcessTekTimestamp(region);
 
@@ -145,7 +138,6 @@ namespace Covid19Radar.Services
             loggerService.Info($"AttemptProcessTekTimestamp: {timestamp}");
 
             exposureNotificationService.SetLastProcessTekTimestamp(region, timestamp);
-            exposureNotificationService.RemoveAttemptProcessTekRegion();
 
             loggerService.EndMethod();
         }
@@ -154,7 +146,7 @@ namespace Covid19Radar.Services
         private static int fetchExposureKeysIsRunning = 0;
 
         // this will be called when they keys need to be collected from the server
-        public async Task FetchExposureKeyBatchFilesFromServerAsync(Func<IEnumerable<string>, Task> submitBatches, CancellationToken cancellationToken)
+        public async Task FetchExposureKeyBatchFilesFromServerAsync(Func<IEnumerable<string>, string, Task> submitBatches, CancellationToken cancellationToken)
         {
             var loggerService = LoggerService;
             var exposureNotificationService = ExposureNotificationService;
@@ -192,12 +184,10 @@ namespace Covid19Radar.Services
                         continue;
                     }
 
-                    // These are used on ExposureDetectionFinishedAsync
-                    exposureNotificationService.SetAttemptProcessTekRegion(serverRegion);
                     exposureNotificationService.SetAttemptProcessTekTimestamp(serverRegion, newCreated);
 
                     loggerService.Info("C19R Submit Batches");
-                    await submitBatches(downloadedFiles);
+                    await submitBatches(downloadedFiles, serverRegion);
 
                     // delete all temporary files
                     foreach (var file in downloadedFiles)

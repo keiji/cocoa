@@ -39,17 +39,20 @@ namespace Xamarin.ExposureNotifications
         {
             Console.WriteLine($"C19R {nameof(ExposureNotificationCallbackService)}");
 
+            var token = workIntent.GetStringExtra(ExposureNotificationClient.ExtraToken);
+            var splittedToken = token.Split("/");
+            var region = splittedToken[0];
+            var guid = splittedToken[1];
+
             // https://developers.google.com/android/exposure-notifications/exposure-notifications-api#methods
             var action = workIntent.Action;
             if (action == ExposureNotificationClient.ActionExposureStateUpdated)
             {
-                var token = workIntent.GetStringExtra(ExposureNotificationClient.ExtraToken);
-
-                var summary = await ExposureNotification.PlatformGetExposureSummaryAsync(token);
+                var summary = await ExposureNotification.PlatformGetExposureSummaryAsync(guid);
 
                 Task<IEnumerable<ExposureInfo>> GetInfo()
                 {
-                    return ExposureNotification.PlatformGetExposureInformationAsync(token);
+                    return ExposureNotification.PlatformGetExposureInformationAsync(guid);
                 }
 
                 // Invoke the custom implementation handler code with the summary info
@@ -65,7 +68,7 @@ namespace Xamarin.ExposureNotifications
                 Console.WriteLine($"C19R {nameof(ExposureNotificationCallbackBroadcastReceiver)} ACTION_EXPOSURE_NOT_FOUND.");
             }
 
-            await ExposureNotification.Handler.ExposureDetectionFinishedAsync();
+            await ExposureNotification.Handler.ExposureDetectionFinishedAsync(region);
         }
     }
 }

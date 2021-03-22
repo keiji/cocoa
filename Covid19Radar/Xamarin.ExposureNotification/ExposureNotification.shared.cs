@@ -85,7 +85,7 @@ namespace Xamarin.ExposureNotifications
 		{
 			var processedAnyFiles = false;
 
-			await Handler?.FetchExposureKeyBatchFilesFromServerAsync(async downloadedFiles =>
+			await Handler?.FetchExposureKeyBatchFilesFromServerAsync(async (downloadedFiles, region) =>
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 
@@ -101,22 +101,22 @@ namespace Xamarin.ExposureNotifications
 					if (hasMatches)
 						await Handler.ExposureDetectedAsync(r.summary, r.getInfo);
 
-					await Handler.ExposureDetectionFinishedAsync();
+					await Handler.ExposureDetectionFinishedAsync(region);
 				}
 				else
 				{
 #if __IOS__
 					// On iOS we need to check this ourselves and invoke the handler
-					var (summary, info) = await PlatformDetectExposuresAsync(downloadedFiles, cancellationToken);
+					var (summary, info) = await PlatformDetectExposuresAsync(downloadedFiles, region, cancellationToken);
 
 					// Check that the summary has any matches before notifying the callback
 					if (summary?.MatchedKeyCount > 0)
 						await Handler.ExposureDetectedAsync(summary, info);
 
-					await Handler.ExposureDetectionFinishedAsync();
+					await Handler.ExposureDetectionFinishedAsync(region);
 #elif __ANDROID__
 					// on Android this will happen in the broadcast receiver
-					await PlatformDetectExposuresAsync(downloadedFiles, cancellationToken);
+					await PlatformDetectExposuresAsync(downloadedFiles, region, cancellationToken);
 #endif
 				}
 

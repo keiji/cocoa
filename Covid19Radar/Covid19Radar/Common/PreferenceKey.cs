@@ -4,7 +4,6 @@
     {
         // for preferences
         public static string StartDateTime = "StartDateTime";
-        public static string AttemptProcessTekRegion = "AttemptProcessTekRegion";
         public static string AttemptProcessTekTimestamp = "AttemptProcessTekTimestamp";
         public static string LastProcessTekTimestamp = "LastProcessTekTimestamp";
         public static string ExposureNotificationConfiguration = "ExposureNotificationConfiguration";

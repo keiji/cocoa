@@ -20,10 +20,6 @@ namespace Covid19Radar.Services
         Configuration GetConfiguration();
         void RemoveConfiguration();
 
-        string GetAttemptProcessTekRegion();
-        void SetAttemptProcessTekRegion(string region);
-        void RemoveAttemptProcessTekRegion();
-
         long GetAttemptProcessTekTimestamp(string region);
         void SetAttemptProcessTekTimestamp(string region, long timestamp);
 
@@ -159,28 +155,6 @@ namespace Covid19Radar.Services
         {
             loggerService.StartMethod();
             await ExposureNotification.UpdateKeysFromServer();
-            loggerService.EndMethod();
-        }
-
-        public string GetAttemptProcessTekRegion()
-        {
-            loggerService.StartMethod();
-            var result = preferencesService.GetValue<string>(PreferenceKey.AttemptProcessTekRegion, null);
-            loggerService.EndMethod();
-            return result;
-        }
-
-        public void SetAttemptProcessTekRegion(string region)
-        {
-            loggerService.StartMethod();
-            preferencesService.SetValue(PreferenceKey.AttemptProcessTekRegion, region);
-            loggerService.EndMethod();
-        }
-
-        public void RemoveAttemptProcessTekRegion()
-        {
-            loggerService.StartMethod();
-            preferencesService.RemoveValue(PreferenceKey.AttemptProcessTekRegion);
             loggerService.EndMethod();
         }
 

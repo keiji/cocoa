@@ -156,8 +156,10 @@ namespace Xamarin.ExposureNotifications
 			}
 		}
 
+
 		// Tells the local API when new diagnosis keys have been obtained from the server
-		static async Task<(ExposureDetectionSummary, Func<Task<IEnumerable<ExposureInfo>>>)> PlatformDetectExposuresAsync(IEnumerable<string> keyFiles, CancellationToken cancellationToken)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+		static async Task<(ExposureDetectionSummary, Func<Task<IEnumerable<ExposureInfo>>>)> PlatformDetectExposuresAsync(IEnumerable<string> keyFiles, string token, CancellationToken cancellationToken)
 		{
 			// Submit to the API
 			var c = await GetConfigurationAsync();
