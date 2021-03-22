@@ -17,7 +17,7 @@ namespace Xamarin.ExposureNotifications
 		// Might be exposed, check and alert user if necessary
 		Task ExposureDetectedAsync(ExposureDetectionSummary summary, Func<Task<IEnumerable<ExposureInfo>>> getExposureInfo);
 
-		Task ExposureDetectionFinishedAsync(string region);
+		Task ExposureDetectionFinishedAsync(string token);
 
 		Task UploadSelfExposureKeysToServerAsync(IEnumerable<TemporaryExposureKey> temporaryExposureKeys);
 	}

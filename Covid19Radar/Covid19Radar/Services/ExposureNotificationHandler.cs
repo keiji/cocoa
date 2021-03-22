@@ -125,13 +125,14 @@ namespace Covid19Radar.Services
         }
 
 #pragma warning disable 1998
-        public async Task ExposureDetectionFinishedAsync(string region)
+        public async Task ExposureDetectionFinishedAsync(string token)
         {
             var loggerService = LoggerService;
             loggerService.StartMethod();
 
             var exposureNotificationService = ExposureNotificationService;
 
+            var region = token.Split("/")[0];
             var timestamp = exposureNotificationService.GetAttemptProcessTekTimestamp(region);
 
             loggerService.Info($"AttemptProcessTekRegion: {region}");

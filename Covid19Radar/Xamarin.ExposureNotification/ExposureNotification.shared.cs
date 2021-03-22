@@ -92,6 +92,8 @@ namespace Xamarin.ExposureNotifications
 				if (!downloadedFiles.Any())
 					return;
 
+				var token = $"{region}/{Guid.NewGuid()}";
+
 				if (nativeImplementation != null)
 				{
 					var r = await nativeImplementation.DetectExposuresAsync(downloadedFiles);
@@ -101,7 +103,7 @@ namespace Xamarin.ExposureNotifications
 					if (hasMatches)
 						await Handler.ExposureDetectedAsync(r.summary, r.getInfo);
 
-					await Handler.ExposureDetectionFinishedAsync(region);
+					await Handler.ExposureDetectionFinishedAsync(token);
 				}
 				else
 				{
@@ -113,10 +115,10 @@ namespace Xamarin.ExposureNotifications
 					if (summary?.MatchedKeyCount > 0)
 						await Handler.ExposureDetectedAsync(summary, info);
 
-					await Handler.ExposureDetectionFinishedAsync(region);
+					await Handler.ExposureDetectionFinishedAsync(token);
 #elif __ANDROID__
 					// on Android this will happen in the broadcast receiver
-					await PlatformDetectExposuresAsync(downloadedFiles, region, cancellationToken);
+					await PlatformDetectExposuresAsync(downloadedFiles, token, cancellationToken);
 #endif
 				}
 

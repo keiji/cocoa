@@ -152,11 +152,9 @@ namespace Xamarin.ExposureNotifications
 		}
 
 		// Tells the local API when new diagnosis keys have been obtained from the server
-		static async Task PlatformDetectExposuresAsync(IEnumerable<string> keyFiles, string region, System.Threading.CancellationToken cancellationToken)
+		static async Task PlatformDetectExposuresAsync(IEnumerable<string> keyFiles, string token, System.Threading.CancellationToken cancellationToken)
 		{
 			var config = await GetConfigurationAsync();
-
-			var token = $"{region}/{Guid.NewGuid()}";
 
 			await Instance.ProvideDiagnosisKeysAsync(
 				keyFiles.Select(f => new Java.IO.File(f)).ToList(),
