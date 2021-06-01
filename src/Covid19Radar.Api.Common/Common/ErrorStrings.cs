@@ -8,7 +8,7 @@ namespace Covid19Radar.Api.Common
     {
 
         //1000: User error strings
-        public const string UserNotFound = "1001: User not found.";
+        public const strin UserNotFound = "1001: User not found.";
 
         //2000: OTP error strings
         public const string OtpInvalidValidateRequest = "2001: Invalid Otp validate request.";
