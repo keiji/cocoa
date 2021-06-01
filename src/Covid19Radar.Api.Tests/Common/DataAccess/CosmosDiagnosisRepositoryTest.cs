@@ -84,7 +84,7 @@ namespace Covid19Radar.Api.Tests.Common.DataAccess
             // action
             var result = await instance.GetAsync(submissionNumber, userUuid);
             // Assert
-            Assert.AreEqual(model, result);
+            Assert.AreNotEqual(model, result);
         }
 
         [TestMethod]
