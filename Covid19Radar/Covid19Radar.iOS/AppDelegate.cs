@@ -45,7 +45,10 @@ namespace Covid19Radar.iOS
             global::Xamarin.Forms.FormsMaterial.Init();
 
             FFImageLoading.Forms.Platform.CachedImageRenderer.Init();
-            global::FFImageLoading.ImageService.Instance.Initialize(new FFImageLoading.Config.Configuration());
+            global::FFImageLoading.ImageService.Instance.Initialize(new FFImageLoading.Config.Configuration()
+            {
+                Logger = new Covid19Radar.Services.DebugLogger()
+            });
 
             //Plugin.LocalNotification.NotificationCenter.AskPermission();
 
